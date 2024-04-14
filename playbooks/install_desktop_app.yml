@@ -1,0 +1,6 @@
+---
+- name: Install onepassword desktop app
+  hosts: "{{ target|default('localhost') }}"
+  connection: local
+  roles:
+    - metashock.onepassword.onepassword_app

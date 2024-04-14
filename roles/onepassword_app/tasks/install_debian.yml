@@ -1,0 +1,49 @@
+# see: https://support.1password.com/install-linux/
+---
+- name: Add the GPG key for the 1Password apt repository
+  ansible.builtin.command:
+    cmd: gpg --dearmor --output "{{ onepassword_app_keyring_path }}"
+    stdin: "{{ lookup('ansible.builtin.url', onepassword_app_download_apt_pubkey_url, split_lines=false) }}"
+  args:
+    creates: "{{ onepassword_app_keyring_path }}"
+
+- name: Add the 1Password apt repository
+  ansible.builtin.copy:
+    content: >
+        deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg]
+        https://downloads.1password.com/linux/debian/amd64 stable main
+    dest: "{{ onepassword_app_sources_list_path }}"
+    mode: "0400"
+
+- name: Create directories for debsig-verify policies and keyrings
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+    mode: 0700
+  loop:
+    - "{{ onepassword_app_debsig_policy_path|dirname }}"
+    - "{{ onepassword_app_debsig_keyring_path|dirname }}"
+
+- name: Add the debsig-verify policy
+  ansible.builtin.uri:
+    url: "{{ onepassword_app_download_debsig_policy_url }}"
+    dest: "{{ onepassword_app_debsig_policy_path }}"
+    mode: "0600"
+    status_code:
+      - 200
+      - 304
+  args:
+    creates: "{{ onepassword_app_debsig_policy_path }}"
+
+- name: Add the GPG debsig keyring
+  ansible.builtin.command:
+    cmd: gpg --dearmor --output "{{ onepassword_app_debsig_keyring_path }}"
+    stdin: "{{ lookup('ansible.builtin.url', onepassword_app_download_debsig_pubkey_url, split_lines=false) }}"
+  args:
+    creates: "{{ onepassword_app_debsig_keyring_path }}"
+
+- name: Install 1password
+  ansible.builtin.apt:
+    name: 1password
+    update_cache: true

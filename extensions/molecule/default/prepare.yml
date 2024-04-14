@@ -1,0 +1,10 @@
+- name: Prepare
+  hosts: target
+  gather_facts: false
+  tasks:
+    - name: Install OS packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        update_cache: true
+      loop:
+        - gpg

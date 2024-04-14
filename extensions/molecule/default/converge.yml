@@ -1,0 +1,2 @@
+---
+- import_playbook: metashock.onepassword.install_desktop_app

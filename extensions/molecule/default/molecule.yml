@@ -1,0 +1,14 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: target1
+    image: ubuntu
+    groups:
+      - target
+provisioner:
+  name: ansible
+  options:
+    extra_vars: "target=target"
