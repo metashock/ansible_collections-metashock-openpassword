@@ -13,7 +13,7 @@
         deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg]
         https://downloads.1password.com/linux/debian/amd64 stable main
     dest: "{{ onepassword_app_sources_list_path }}"
-    mode: "0400"
+    mode: "0644"
 
 - name: Create directories for debsig-verify policies and keyrings
   ansible.builtin.file:
